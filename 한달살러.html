@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>전북 한달살기 · 숙박 체크리스트</title>
+<style>
+  :root{
+    --navy:#1B3A5C;
+    --navy-2:#2E5A7C;
+    --gold:#D4A94A;
+    --ivory:#FAF7F2;
+    --ink:#22303C;
+    --muted:#7C8794;
+    --line:#E7E0D6;
+    --done:#3F7A5E;
+    --danger:#B4543E;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:'GmarketSansMedium',-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    background:var(--ivory);
+    color:var(--ink);
+    min-height:100dvh;
+    word-break:keep-all;
+    line-height:1.55;
+    padding:0 0 calc(28px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:0 16px;}
+
+  /* Header */
+  header{
+    background:var(--navy);
+    color:var(--ivory);
+    padding:calc(22px + env(safe-area-inset-top)) 0 20px;
+    border-bottom:3px solid var(--gold);
+  }
+  .eyebrow{
+    font-size:11px; letter-spacing:2.5px; text-transform:uppercase;
+    color:var(--gold); margin:0 0 6px;
+  }
+  header h1{font-size:22px; margin:0 0 4px; letter-spacing:-0.3px;}
+  header .sub{font-size:13px; color:#C7D2DD; margin:0;}
+
+  /* Progress */
+  .progress-card{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:16px; margin:18px 0 14px;
+  }
+  .progress-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
+  .progress-top .label{font-size:13px; color:var(--muted);}
+  .progress-top .count{font-size:15px; color:var(--navy); font-weight:700;}
+  .bar{height:9px; border-radius:99px; background:var(--line); overflow:hidden;}
+  .bar > span{display:block; height:100%; width:0%; background:var(--gold); border-radius:99px; transition:width .35s ease;}
+
+  /* Coverage strip */
+  .coverage{margin:0 0 22px;}
+  .coverage .ctitle{font-size:12px; color:var(--muted); margin:0 0 8px;}
+  .strip{display:flex; gap:3px; height:46px; border-radius:10px; overflow:hidden;}
+  .seg{display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; padding:4px 2px; text-align:center;}
+  .seg b{font-size:13px; line-height:1.15;}
+  .seg small{font-size:10px; opacity:.85; margin-top:2px;}
+  .seg.jeonju{background:var(--navy);}
+  .seg.gunsan{background:var(--gold); color:#3a2c08;}
+  .seg.namwon{background:var(--navy-2);}
+
+  /* Section */
+  .section{margin-bottom:22px;}
+  .sec-head{display:flex; align-items:center; gap:9px; margin:0 0 10px;}
+  .dot{width:11px; height:11px; border-radius:3px; flex:none;}
+  .sec-head h2{font-size:16px; margin:0; color:var(--navy); letter-spacing:-0.2px;}
+  .sec-head .sub{font-size:12px; color:var(--muted); margin-left:auto;}
+
+  /* Task */
+  .task{
+    background:#fff; border:1px solid var(--line); border-radius:13px;
+    padding:13px 13px 11px; margin-bottom:10px;
+  }
+  .task.is-done{background:#F4F7F4; border-color:#D9E5DC;}
+  .task-row{display:flex; gap:11px; align-items:flex-start;}
+  .check{
+    flex:none; width:26px; height:26px; margin-top:1px; border-radius:8px;
+    border:2px solid #C6CDD4; background:#fff; cursor:pointer; position:relative;
+    min-width:26px;
+  }
+  .check:active{transform:scale(.92);}
+  .task.is-done .check{background:var(--done); border-color:var(--done);}
+  .check svg{position:absolute; inset:0; margin:auto; opacity:0; transition:opacity .15s;}
+  .task.is-done .check svg{opacity:1;}
+  .task-main{flex:1; min-width:0;}
+  .task-title{font-size:15px; font-weight:700; color:var(--ink); margin:0 0 2px;}
+  .task.is-done .task-title{color:var(--muted); text-decoration:line-through;}
+  .task-when{font-size:12px; color:var(--muted); margin:0;}
+  .task-when .nights{color:var(--gold); font-weight:700;}
+
+  .pill{
+    border:none; border-radius:99px; padding:5px 11px; font-size:11.5px; font-weight:700;
+    cursor:pointer; flex:none; font-family:inherit; letter-spacing:.2px;
+    min-height:30px;
+  }
+  .pill.todo{background:#EEE9E0; color:#8A7B5E;}
+  .pill.doing{background:var(--gold); color:#3a2c08;}
+  .pill.done{background:var(--done); color:#fff;}
+
+  .memo{
+    width:100%; margin-top:10px; border:1px solid var(--line); border-radius:9px;
+    background:var(--ivory); padding:9px 10px; font-family:inherit; font-size:13px;
+    color:var(--ink); resize:vertical; min-height:42px; line-height:1.5;
+  }
+  .memo:focus{outline:none; border-color:var(--gold); background:#fff;}
+  .memo::placeholder{color:#B3AFA6;}
+
+  .task-foot{display:flex; align-items:center; gap:10px; margin-top:8px;}
+  .del{margin-left:auto; background:none; border:none; color:#C0B6A8; font-size:12px; cursor:pointer; font-family:inherit; padding:6px 4px; min-height:34px;}
+  .del:active{color:var(--danger);}
+
+  .add-btn{
+    width:100%; border:1.5px dashed #D2C6B2; background:transparent; color:var(--navy);
+    border-radius:11px; padding:11px; font-size:13px; font-weight:700; cursor:pointer;
+    font-family:inherit; min-height:48px;
+  }
+  .add-btn:active{background:#F2ECE1;}
+
+  /* footer actions */
+  .foot-actions{margin-top:26px; display:flex; gap:10px; align-items:center; justify-content:center;}
+  .reset{background:none; border:1px solid var(--line); color:var(--muted); border-radius:9px; padding:9px 14px; font-size:12px; cursor:pointer; font-family:inherit; min-height:42px;}
+  .reset:active{border-color:var(--danger); color:var(--danger);}
+  .saved{font-size:11.5px; color:var(--done); opacity:0; transition:opacity .3s;}
+  .saved.show{opacity:1;}
+  .note{font-size:11px; color:var(--muted); text-align:center; margin-top:14px; line-height:1.6;}
+
+  @media (max-width:520px){
+    header h1{font-size:20px;}
+    .seg b{font-size:12px;}
+    .seg small{font-size:9px;}
+    .task-title{font-size:14.5px;}
+  }
+  @media (max-width:360px){
+    .wrap{padding:0 12px;}
+    .seg small{display:none;}
+    .pill{padding:5px 9px; font-size:11px;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="eyebrow">JEONBUK · A MONTH</p>
+    <h1>전북 한달살기 · 숙박 체크리스트</h1>
+    <p class="sub">8.1 → 8.27 · 총 26박 · 베이스캠프 전주 · 군산 · 남원</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="progress-card">
+    <div class="progress-top">
+      <span class="label">완료한 일</span>
+      <span class="count" id="count">0 / 0</span>
+    </div>
+    <div class="bar"><span id="barfill"></span></div>
+  </div>
+
+  <div class="coverage">
+    <p class="ctitle">한 달 전체 흐름 — 빈 날 없이 연결돼요</p>
+    <div class="strip">
+      <div class="seg jeonju" style="flex:10"><b>전주</b><small>8.1–8.11 · 10박</small></div>
+      <div class="seg gunsan" style="flex:8"><b>군산</b><small>8.11–8.19 · 8박</small></div>
+      <div class="seg namwon" style="flex:8"><b>남원</b><small>8.19–8.27 · 8박</small></div>
+    </div>
+  </div>
+
+  <div id="board"></div>
+
+  <div class="foot-actions">
+    <button class="reset" id="reset">처음 목록으로 되돌리기</button>
+    <span class="saved" id="saved">저장됨 ✓</span>
+  </div>
+  <p class="note">체크박스로 완료 표시 · 가운데 칸을 눌러 메모 입력 · 모든 변경은 자동 저장돼요.</p>
+</div>
+
+<script>
+const KEY = 'jeonbuk-stay-todo-v1';
+
+const SECTIONS = [
+  {id:'jeonju', name:'전주', range:'8.1 → 8.11 · 10박', color:'#1B3A5C'},
+  {id:'gunsan', name:'군산', range:'8.11 → 8.19 · 8박', color:'#D4A94A'},
+  {id:'namwon', name:'남원', range:'8.19 → 8.27 · 8박', color:'#2E5A7C'},
+  {id:'content', name:'콘텐츠 · 홍보 의무', range:'블로그4 · 인스타15 · 유튜브2~3', color:'#B07B2E'},
+  {id:'proof',  name:'증빙 · 정산 (영수증)', range:'사후정산', color:'#5E7350'},
+  {id:'admin',  name:'행정 · 담당 공무원', range:'', color:'#7C8794'},
+];
+
+const DEFAULTS = [
+  {id:'jj1', sec:'jeonju', title:'전주 ① 숙소', when:'8.1 → 8.5', nights:'4박', status:'doing', done:false,
+   memo:'에어비앤비 요청 완료 → 호스트 확정 회신 기다리기.\n⚠️ 4박이라, 전주 ②는 6박(8.5~8.11)으로 채워야 전주 합계가 10박이 돼요. (5박+5박으로 가려면 ①을 5박으로 변경 요청)'},
+  {id:'jj2', sec:'jeonju', title:'전주 ② 숙소', when:'8.5 → 8.11', nights:'6박', status:'todo', done:false,
+   memo:'전주 ②(6박) 숙소 찾기 → 예약. ①과 다른 동네로 잡으면 콘텐츠도 다양해짐.'},
+  {id:'gs0', sec:'gunsan', title:'기존 에어비앤비 취소', when:'', nights:'', status:'doing', done:false,
+   memo:'취소 요청함 → 취소/환불 확정 회신 확인하기.'},
+  {id:'gs1', sec:'gunsan', title:'군산 시내 숙소', when:'8.11 → 8.15', nights:'4박', status:'todo', done:false,
+   memo:'후보: 군산 그란 호텔(세탁기·스타일러·전자레인지, 작업+빨래 최고) / 브라운도트 근대화거리점(근대역사박물관 도보권).'},
+  {id:'gs2', sec:'gunsan', title:'선유도 펜션', when:'8.15 → 8.19', nights:'4박', status:'todo', done:false,
+   memo:'후보: 선유도에물들다(노을·콘텐츠 좋음) / 선유도 씨에스타(화이트톤·오션뷰).\n⚠️ 8월 중순 성수기 — 전화·블로그 예약, 빨리 잡기!'},
+  {id:'gs3', sec:'gunsan', title:'렌터카 예약', when:'8.11 ~ 8.19', nights:'', status:'todo', done:false,
+   memo:'선유도 이동용. 군산 시내~선유도(고군산군도) 차로 진입. 픽업/반납 장소·날짜 확인.'},
+  {id:'nw1', sec:'namwon', title:'남원 숙소', when:'8.19 → 8.27', nights:'8박', status:'todo', done:false,
+   memo:'남원 숙소 찾기 → 예약. (한 곳에서 8박 정착 추천)'},
+  {id:'ad1', sec:'admin', title:'계획서 숙박 정정 이메일', when:'', nights:'', status:'todo', done:false,
+   memo:'담당 공무원에게: 첫 구간이 8.10으로 잘못 들어가 하루(8.10→8.11)가 빔. 8.1~8.11(10박)로 정정 요청.\n→ 정정 보낼 준비 되면 벨라가 "이메일 써줘" 라고 하면 초안 드릴게요.'},
+
+  {id:'ct1', sec:'content', title:'네이버 블로그 4건+', when:'', nights:'', status:'todo', done:false,
+   memo:'① 전북 한달살기 총비용·지원금 솔직 정리\n② 전주·군산·남원 베이스캠프별 숙소 & 맛집 리뷰\n③ 크루즈 노마드가 고른 전북 한달살기 추천 코스\n④ 군산 레트로 여행 완벽 가이드(1박2일)'},
+  {id:'ct2', sec:'content', title:'인스타 @bellaleeon · 피드 10건+ / 릴스 5건+', when:'', nights:'', status:'todo', done:false,
+   memo:'매주 2~3회 피드 + 릴스 5건 이상. 현장에서 사진·영상 그때그때 찍어두기(나중에 몰아서 편집).'},
+  {id:'ct3', sec:'content', title:'유튜브 브이로그 2~3편', when:'', nights:'', status:'todo', done:false,
+   memo:'EP.1 전주 한옥마을 / EP.2 군산 레트로 / EP.3 전북 26박 총정리·비용 공개'},
+  {id:'ct4', sec:'content', title:'필수 해시태그 넣기', when:'', nights:'', status:'todo', done:false,
+   memo:'모든 게시물 필수: #전북특별자치도 #전북한달여행하기 #전주여행 #군산여행 #남원여행'},
+  {id:'ct5', sec:'content', title:'게시물 공개 유지', when:'', nights:'', status:'todo', done:false,
+   memo:'올린 콘텐츠는 삭제하지 말고 공개 유지. 정확한 유지 기간은 담당자에게 확인.'},
+
+  {id:'pf1', sec:'proof', title:'숙박 영수증·증빙 모으기', when:'', nights:'', status:'todo', done:false,
+   memo:'전주①② · 군산 시내 · 선유도 · 남원 — 카드영수증/세금계산서/이체내역 숙소별로 보관.\n사후정산: 먼저 쓰고 증빙 제출 후 환급.'},
+  {id:'pf2', sec:'proof', title:'체험·입장료 영수증 모으기', when:'', nights:'', status:'todo', done:false,
+   memo:'관광지 입장료·체험 프로그램 영수증 보관.'},
+  {id:'pf3', sec:'proof', title:'여행자보험 가입 + 증빙', when:'', nights:'', status:'todo', done:false,
+   memo:'필수 가입. 가입 확인서/영수증 보관.'},
+  {id:'pf4', sec:'proof', title:'사후정산 서류 제출', when:'', nights:'', status:'todo', done:false,
+   memo:'영수증·증빙 정리해서 제출. 정산 방법·마감일은 담당자에게 확인.'},
+];
+
+let state = {tasks: null};
+let persistOK = (typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function');
+let saveTimer = null;
+
+async function load(){
+  if(persistOK){
+    try{
+      const r = await window.storage.get(KEY);
+      if(r && r.value){ state.tasks = JSON.parse(r.value); }
+    }catch(e){ /* no saved data yet */ }
+  }
+  if(!Array.isArray(state.tasks)){
+    state.tasks = JSON.parse(JSON.stringify(DEFAULTS));
+    await save(true);
+  } else {
+    // merge in newly added default items, keeping existing edits
+    const ids = new Set(state.tasks.map(t=>t.id));
+    let added = false;
+    DEFAULTS.forEach(d=>{ if(!ids.has(d.id)){ state.tasks.push(JSON.parse(JSON.stringify(d))); added = true; } });
+    if(added) await save(true);
+  }
+  render();
+}
+
+async function save(silent){
+  if(persistOK){
+    try{ await window.storage.set(KEY, JSON.stringify(state.tasks)); }catch(e){}
+  }
+  if(!silent) flashSaved();
+}
+function queueSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>save(false), 350);
+}
+function flashSaved(){
+  const el = document.getElementById('saved');
+  el.classList.add('show');
+  clearTimeout(flashSaved._t);
+  flashSaved._t = setTimeout(()=>el.classList.remove('show'), 1100);
+}
+
+function statusMeta(t){
+  if(t.done) return {cls:'done', label:'완료'};
+  if(t.status==='doing') return {cls:'doing', label:'진행 중'};
+  return {cls:'todo', label:'할 일'};
+}
+
+function render(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  SECTIONS.forEach(sec=>{
+    const items = state.tasks.filter(t=>t.sec===sec.id);
+    const wrap = document.createElement('div');
+    wrap.className = 'section';
+    const head = document.createElement('div');
+    head.className = 'sec-head';
+    head.innerHTML = `<span class="dot" style="background:${sec.color}"></span><h2>${sec.name}</h2>`+
+      (sec.range?`<span class="sub">${sec.range}</span>`:'');
+    wrap.appendChild(head);
+
+    items.forEach(t=>wrap.appendChild(taskEl(t)));
+
+    const add = document.createElement('button');
+    add.className = 'add-btn';
+    add.textContent = '+ 할 일 추가';
+    add.onclick = ()=>addTask(sec.id);
+    wrap.appendChild(add);
+
+    board.appendChild(wrap);
+  });
+  updateProgress();
+}
+
+function taskEl(t){
+  const sm = statusMeta(t);
+  const el = document.createElement('div');
+  el.className = 'task'+(t.done?' is-done':'');
+
+  const whenLine = (t.when||t.nights)
+    ? `<p class="task-when">${t.when||''}${t.nights?` · <span class="nights">${t.nights}</span>`:''}</p>` : '';
+
+  el.innerHTML = `
+    <div class="task-row">
+      <button class="check" aria-label="완료 체크">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="task-main">
+        <p class="task-title"></p>
+        ${whenLine}
+      </div>
+      <button class="pill ${sm.cls}">${sm.label}</button>
+    </div>
+    <textarea class="memo" placeholder="메모 입력…"></textarea>
+    <div class="task-foot">
+      <button class="del">삭제</button>
+    </div>
+  `;
+  el.querySelector('.task-title').textContent = t.title;
+  const memo = el.querySelector('.memo');
+  memo.value = t.memo || '';
+
+  el.querySelector('.check').onclick = ()=>{ t.done = !t.done; render(); queueSave(); };
+  el.querySelector('.pill').onclick = (e)=>{
+    e.stopPropagation();
+    if(t.done){ t.done=false; t.status='doing'; }
+    else { t.status = (t.status==='doing') ? 'todo' : 'doing'; }
+    render(); queueSave();
+  };
+  memo.oninput = ()=>{ t.memo = memo.value; queueSave(); };
+  el.querySelector('.del').onclick = ()=>{
+    if(confirm(`"${t.title}" 항목을 삭제할까요?`)){
+      state.tasks = state.tasks.filter(x=>x!==t);
+      render(); save(false);
+    }
+  };
+  return el;
+}
+
+function addTask(secId){
+  const title = prompt('할 일 제목을 입력하세요');
+  if(!title) return;
+  state.tasks.push({id:'c'+Date.now(), sec:secId, title:title.trim(), when:'', nights:'', status:'todo', done:false, memo:''});
+  render(); save(false);
+}
+
+function updateProgress(){
+  const total = state.tasks.length;
+  const done = state.tasks.filter(t=>t.done).length;
+  document.getElementById('count').textContent = `${done} / ${total}`;
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById('barfill').style.width = pct+'%';
+}
+
+document.getElementById('reset').onclick = async ()=>{
+  if(confirm('체크와 메모가 모두 처음 상태로 돌아가요. 되돌릴까요?')){
+    state.tasks = JSON.parse(JSON.stringify(DEFAULTS));
+    render(); await save(false);
+  }
+};
+
+load();
+</script>
+</body>
+</html>
